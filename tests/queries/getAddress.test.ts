@@ -31,6 +31,37 @@ describe('getAddress', () => {
     });
   });
 
+  test('returns state for a known address', async () => {
+    const query = `
+            query GetAddress($username: String!) {
+                address(username: $username) {
+                    street
+                    city
+                    zipcode
+                    state
+                }
+            }
+        `;
+
+    const variables = { username: 'sam' };
+
+    const result = await executor({
+      document: parse(query),
+      variables,
+    });
+
+    expect(result).toEqual({
+      data: {
+        address: {
+          street: '555 New Lane',
+          city: 'Metro City',
+          zipcode: '75001',
+          state: 'TX',
+        },
+      },
+    });
+  });
+
   test('Error', async () => {
     const query = `
             query GetAddress($username: String!) {
@@ -48,15 +79,15 @@ describe('getAddress', () => {
       document: parse(query),
       variables,
     });
-    
+
     expect(result).toEqual(
-    expect.objectContaining(
-      {
-        "errors": expect.arrayContaining([expect.objectContaining({
-          "message": "No address found in getAddress resolver"
-        })])
-      }
-    )
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: 'No address found in getAddress resolver',
+          }),
+        ]),
+      })
     );
   });
 });

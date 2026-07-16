@@ -8,5 +8,11 @@
     "street": "234 Other St",
     "city": "Townville",
     "zipcode": "32145"
+  },
+  "sam": {
+    "street": "555 New Lane",
+    "city": "Metro City",
+    "zipcode": "75001",
+    "state": "TX"
   }
 }
