@@ -12,3 +12,11 @@ export type Addresses = {
 export type Args = {
   username: string;
 };
+
+export type CreateAddressInput = {
+  username: string;
+  street: string;
+  city: string;
+  zipcode: string;
+  state?: string;
+};
