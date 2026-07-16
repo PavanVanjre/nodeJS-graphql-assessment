@@ -15,15 +15,22 @@ export class Logger {
     this.requestId = requestId;
   }
 
-  info(message: string, meta?: object) {
-    this.winston.info(message, meta);
+  private mergeMeta(meta?: object | string) {
+    if (typeof meta === 'string') {
+      return { requestId: this.requestId, detail: meta };
+    }
+    return { requestId: this.requestId, ...(meta ?? {}) };
   }
 
-  error(message: string, meta?: object) {
-    this.winston.error(message, meta);
+  info(message: string, meta?: object | string) {
+    this.winston.info(message, this.mergeMeta(meta));
   }
 
-  warn(message: string, meta?: object) {
-    this.winston.warn(message, meta);
+  error(message: string, meta?: object | string) {
+    this.winston.error(message, this.mergeMeta(meta));
+  }
+
+  warn(message: string, meta?: object | string) {
+    this.winston.warn(message, this.mergeMeta(meta));
   }
 }

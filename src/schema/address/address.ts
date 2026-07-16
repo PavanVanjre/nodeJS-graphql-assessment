@@ -12,21 +12,21 @@ const _getAddress = (username: string): Address | null => {
 };
 
 export const getAddress = (_: any, args: Args, context: any): Address => {
-  context.logger.info('getAddress', 'Enter resolver');
+  context.logger.info('getAddress', { stage: 'Enter resolver' });
   const address = _getAddress(args.username);
   if (address) {
-    context.logger.info('getAddress', 'Returning address');
+    context.logger.info('getAddress', { stage: 'Returning address' });
     return address;
   }
-  context.logger.error('getAddress', 'No address found');
+  context.logger.error('getAddress', { stage: 'No address found' });
   throw new GraphQLError('No address found in getAddress resolver');
 };
 
 export const createAddress = (_: any, args: CreateAddressInput, context: any): Address => {
-  context.logger.info('createAddress', 'Enter resolver');
+  context.logger.info('createAddress', { stage: 'Enter resolver' });
 
   if (addresses[args.username]) {
-    context.logger.error('createAddress', 'Address already exists');
+    context.logger.error('createAddress', { stage: 'Address already exists' });
     throw new GraphQLError('Address already exists for this username');
   }
 
@@ -40,6 +40,6 @@ export const createAddress = (_: any, args: CreateAddressInput, context: any): A
   addresses[args.username] = newAddress;
   writeFileSync(dataFilePath, JSON.stringify(addresses, null, 2) + '\n');
 
-  context.logger.info('createAddress', 'Address created');
+  context.logger.info('createAddress', { stage: 'Address created' });
   return newAddress;
 };
