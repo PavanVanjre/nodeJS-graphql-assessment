@@ -3,6 +3,7 @@ import winston from 'winston';
 export class Logger {
   private winston: any;
   requestId: string = '';
+  client?: string;
   constructor() {
     this.winston = winston.createLogger({
       level: 'info',
@@ -15,11 +16,17 @@ export class Logger {
     this.requestId = requestId;
   }
 
+  setClient(client?: string) {
+    this.client = client;
+  }
+
   private mergeMeta(meta?: object | string) {
+    const base: any = { requestId: this.requestId };
+    if (this.client) base.client = this.client;
     if (typeof meta === 'string') {
-      return { requestId: this.requestId, detail: meta };
+      return { ...base, detail: meta };
     }
-    return { requestId: this.requestId, ...(meta ?? {}) };
+    return { ...base, ...(meta ?? {}) };
   }
 
   info(message: string, meta?: object | string) {
