@@ -5,6 +5,7 @@ import { useValidationCache } from '@envelop/validation-cache';
 import { buildHeaders } from './buildHeaders';
 import { useLogger } from './useLogger';
 import { validateClient } from './validateClient';
+import { appendResponseMetadata } from './appendMetadata';
 import { ContextType } from '../types';
 
 const plugins: Plugin<ContextType>[] = [
@@ -12,6 +13,7 @@ const plugins: Plugin<ContextType>[] = [
   buildHeaders(),
   useLogger(),
   validateClient(),
+  appendResponseMetadata(),
   useParserCache() as Plugin<ContextType>,
   useValidationCache() as Plugin<ContextType>,
 ];

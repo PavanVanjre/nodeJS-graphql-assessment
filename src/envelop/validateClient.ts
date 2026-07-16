@@ -27,18 +27,16 @@ export const validateClient = (): Plugin<ContextType> => {
 
       const clientHeader = getHeader('client');
 
+      // Attach client to context (may be undefined). If a logger exists, set the client on it.
+      extendContext({ client: clientHeader });
       if (!clientHeader) {
-        // If a logger is available, log the missing header before rejecting.
         if ((context as any).logger && typeof (context as any).logger.error === 'function') {
           (context as any).logger.error('validateClient', { issue: 'Missing required header: client' });
         }
-        throw new GraphQLError('Missing required header: client');
-      }
-
-      // Attach client to context and, if a logger exists, set the client on it.
-      extendContext({ client: clientHeader });
-      if ((context as any).logger && typeof (context as any).logger.setClient === 'function') {
-        (context as any).logger.setClient(clientHeader);
+      } else {
+        if ((context as any).logger && typeof (context as any).logger.setClient === 'function') {
+          (context as any).logger.setClient(clientHeader);
+        }
       }
     },
 
@@ -46,8 +44,23 @@ export const validateClient = (): Plugin<ContextType> => {
       const clientHeader = (context as any).client;
       const operationType = getOperationType(args.document);
 
+      // Enforce missing client header here so appendResponseMetadata can run and
+      // append the requestId even when the request is rejected.
+      if (!clientHeader) {
+        if ((context as any).logger && typeof (context as any).logger.error === 'function') {
+          (context as any).logger.error('validateClient', { issue: 'Missing required header: client' });
+        }
+        const requestId = (context as any).requestId ?? (context as any).logger?.requestId;
+        throw new GraphQLError('Missing required header: client', {
+          extensions: { metadata: { requestId } },
+        });
+      }
+
       if (typeof clientHeader === 'string' && clientHeader.toLowerCase() === 'strata' && operationType === 'mutation') {
-        throw new GraphQLError('Mutations are not allowed for client: strata');
+        const requestId = (context as any).requestId ?? (context as any).logger?.requestId;
+        throw new GraphQLError('Mutations are not allowed for client: strata', {
+          extensions: { metadata: { requestId } },
+        });
       }
     },
   };
