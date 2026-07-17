@@ -1,0 +1,37 @@
+{
+  "sources": [
+    {
+      "name": "NasaNeoFeed",
+      "handler": {
+        "jsonSchema": {
+          "endpoint": "https://api.nasa.gov/neo/rest/v1",
+          "queryParams": {
+            "api_key": "DEMO_KEY"
+          },
+          "operations": [
+            {
+              "type": "Query",
+              "field": "nearEarthObjects",
+              "path": "/feed",
+              "method": "GET",
+              "responseSchema": "./data/nasa_neo_schema.json",
+              "argTypeMap": {
+                "start_date": {
+                  "type": "string"
+                },
+                "end_date": {
+                  "type": "string"
+                }
+              },
+              "queryParamArgMap": {
+                "start_date": "start_date",
+                "end_date": "end_date"
+              },
+              "responseTypeName": "NearEarthObjectFeedRaw"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
